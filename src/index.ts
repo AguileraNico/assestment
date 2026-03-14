@@ -1,5 +1,8 @@
+import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
 import jurisprudenciaRouter from './routes/jurisprudencia/jurisprudencia';
+import embeddingsRouter from './routes/embeddings/embeddings';
+import analisisRouter from './routes/analisis/analisis';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -10,6 +13,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/jurisprudencia', jurisprudenciaRouter);
+app.use('/embeddings', embeddingsRouter);
+app.use('/analisis', analisisRouter);
 
 // Health check
 app.get('/health', (_req: Request, res: Response) => {
