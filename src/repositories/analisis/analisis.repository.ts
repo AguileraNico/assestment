@@ -17,32 +17,38 @@ export class AnalisisRepository {
     const contexto = casos
       .map((caso, i) => {
         const texto = textosCasos[i] ?? '';
-        const preview = texto.slice(0, 3000); // ~750 tokens por fallo
-        return `--- FALLO ${i + 1}: ${caso.nroRegistro} | ${caso.caratula} (similitud: ${(caso.score * 100).toFixed(1)}%) ---\n${preview}`;
+        const preview = texto.slice(0, 3000);
+        return `--- PRECEDENTE ${i + 1}: ${caso.nroRegistro} | Similitud: ${(caso.score * 100).toFixed(1)}% ---\nCarátula: ${caso.caratula}\n\nTexto del fallo:\n${preview}`;
       })
       .join('\n\n');
 
-    const prompt = `Sos un asistente jurídico especializado en jurisprudencia laboral argentina de la Suprema Corte de la Provincia de Buenos Aires (SCBA).
+    const systemPrompt = `Sos un asistente de investigación jurídica especializado en jurisprudencia laboral de la Suprema Corte de la Provincia de Buenos Aires (SCBA).
+Tu rol es ayudar a abogados laboralistas a encontrar y utilizar precedentes relevantes para sus casos.
+Cuando recibas un caso y fallos de referencia, analizá los precedentes y respondé siempre con esta estructura:
 
-Se te proporciona la siguiente consulta jurídica:
+1. **Cómo se resolvió cada caso similar**: Para cada fallo, explicá brevemente el resultado (si el trabajador ganó o perdió, qué se resolvió) y citá su número de registro.
+2. **Doctrina que surge de estos fallos**: ¿Qué criterio o principio jurídico aplicó la SCBA de forma consistente? ¿Hay evolución o cambios en la postura del tribunal?
+3. **Cómo usarlos como precedente**: ¿Qué argumentos concretos puede esgrimir el abogado basándose en estos fallos? ¿Qué aspectos del caso actual son análogos a los precedentes encontrados?
+
+Citá siempre el número de registro (ej: RS-18-2026) cuando menciones un fallo específico. Respondé en español, de forma clara y accionable para un abogado.`;
+
+    const userPrompt = `El abogado está estudiando el siguiente caso:
 """
 ${consulta}
 """
 
-Y los siguientes fallos relevantes de la SCBA como contexto:
+Se encontraron los siguientes fallos de la SCBA como precedentes relevantes:
 
 ${contexto}
 
-Basándote exclusivamente en los fallos proporcionados, respondé:
-1. ¿Qué doctrina o criterio predomina en estos fallos respecto a la consulta?
-2. ¿Hay posiciones disidentes o evolución en la doctrina?
-3. ¿Cómo aplicarías estos precedentes al caso consultado?
-
-Respondé de forma clara, citando los números de registro de los fallos cuando corresponda.`;
+Analizá estos precedentes y respondé con las tres secciones indicadas.`;
 
     const completion = await this.client.chat.completions.create({
       model: this.model,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
       temperature: 0.3,
       max_tokens: 1500,
     });

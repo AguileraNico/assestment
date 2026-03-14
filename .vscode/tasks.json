@@ -7,6 +7,24 @@
 			"command": "npm run dev",
 			"isBackground": true,
 			"problemMatcher": []
+		},
+		{
+			"label": "analisis-caso",
+			"type": "shell",
+			"command": "curl -s -X POST http://localhost:3000/analisis/analizar -H 'Content-Type: application/json' -d '{\"consulta\": \"Trabajador que sufre un accidente in itinere mientras se desplazaba en moto desde su domicilio al trabajo. La ART rechaza la cobertura alegando que el trayecto no era el habitual. El trabajador reclama indemnización por incapacidad parcial permanente del 35%. La empleadora es una empresa de logística de la provincia de Buenos Aires.\", \"topK\": 5}' | jq '{casosUsados, respuesta}'",
+			"problemMatcher": []
+		},
+		{
+			"label": "analisis-caso",
+			"type": "shell",
+			"command": "curl -s -X POST http://localhost:3000/analisis/analizar -H 'Content-Type: application/json' -d '{\"consulta\": \"Trabajador que sufre un accidente in itinere mientras se desplazaba en moto desde su domicilio al trabajo. La ART rechaza la cobertura alegando que el trayecto no era el habitual. El trabajador reclama indemnización por incapacidad parcial permanente del 35%. La empleadora es una empresa de logística de la provincia de Buenos Aires.\", \"topK\": 5}' | jq -r '.respuesta'",
+			"problemMatcher": []
+		},
+		{
+			"label": "generar-embeddings",
+			"type": "shell",
+			"command": "curl -s -X POST http://localhost:3000/embeddings/generar -H 'Content-Type: application/json' -d '{\"limite\": 159}' | jq '{procesados, errores}'",
+			"problemMatcher": []
 		}
 	]
 }
