@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { JurisprudenciaService } from '../../services/jurisprudencia/jurisprudencia.service';
-import { AnalizarHttpBody, ErrorResponse } from './types';
-import { AnalizarRequest } from '../../services/jurisprudencia/types';
+import { AnalizarHttpBody, ObtenerDocumentoHttpBody, ErrorResponse } from './types';
 
 export class JurisprudenciaController {
   constructor(private readonly service: JurisprudenciaService) {}
@@ -24,7 +23,29 @@ export class JurisprudenciaController {
       res.status(500).json({
         error: 'Error al procesar el análisis',
         detail: error instanceof Error ? error.message : 'Error desconocido',
-      });
+      } satisfies ErrorResponse);
+    }
+  };
+
+  obtenerDocumento = async (req: Request<{}, {}, ObtenerDocumentoHttpBody>, res: Response): Promise<void> => {
+    const { idCodigoAcceso } = req.body;
+
+    if (!idCodigoAcceso) {
+      res.status(400).json({
+        error: 'Se requiere el campo "idCodigoAcceso" en el body',
+      } satisfies ErrorResponse);
+      return;
+    }
+
+    try {
+      const documento = await this.service.obtenerDocumento(idCodigoAcceso);
+      res.status(200).json(documento);
+    } catch (error) {
+      console.error('Error en JurisprudenciaController.obtenerDocumento:', error);
+      res.status(500).json({
+        error: 'Error al obtener el documento',
+        detail: error instanceof Error ? error.message : 'Error desconocido',
+      } satisfies ErrorResponse);
     }
   };
 }

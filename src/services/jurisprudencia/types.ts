@@ -3,3 +3,9 @@ export interface AnalizarRequest {
   caso?: string;
   parametros?: Record<string, unknown>;
 }
+
+export interface FiltrosBusqueda {
+  fDesde?: string;
+  fHasta?: string;
+  texoIncluido?: string;
+}

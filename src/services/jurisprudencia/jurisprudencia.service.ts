@@ -1,30 +1,40 @@
-import { AnalizarRequest } from './types';
-import { ResultadoAnalisis } from '../../repositories/jurisprudencia/types';
+import { AnalizarRequest, FiltrosBusqueda } from './types';
+import { ResultadoAnalisis, BuscarSentenciasResponse, DocumentoSentencia } from '../../repositories/jurisprudencia/types';
 import { JurisprudenciaRepository } from '../../repositories/jurisprudencia/jurisprudencia.repository';
 
 export class JurisprudenciaService {
   constructor(private readonly repository: JurisprudenciaRepository) {}
 
   async analizar(data: AnalizarRequest): Promise<ResultadoAnalisis> {
-    // Persistir el registro inicial
     const registro = await this.repository.guardar(data);
 
-    // TODO: Implementar lógica de análisis (ej: llamada a modelo de IA, reglas, etc.)
-    const resultado = await this.procesarAnalisis(registro);
+    const sentencias = await this.repository.buscarSentencias({
+      texoIncluido: data.texto ?? '',
+    });
 
-    // Actualizar estado tras el procesamiento
+    const resultado = await this.procesarAnalisis(registro, sentencias);
+
     const actualizado = await this.repository.actualizar(registro.id, {
       estado: resultado.estado,
+      parametros: { ...registro.parametros, sentencias },
     });
 
     return actualizado ?? registro;
   }
 
-  private async procesarAnalisis(registro: ResultadoAnalisis): Promise<ResultadoAnalisis> {
-    // TODO: Reemplazar con lógica real
-    return {
-      ...registro,
-      estado: 'procesado',
-    };
+  async buscarSentencias(filtros: FiltrosBusqueda): Promise<BuscarSentenciasResponse> {
+    return this.repository.buscarSentencias(filtros);
+  }
+
+  async obtenerDocumento(idCodigoAcceso: string): Promise<DocumentoSentencia> {
+    return this.repository.obtenerDocumento(idCodigoAcceso);
+  }
+
+  private async procesarAnalisis(
+    registro: ResultadoAnalisis,
+    _sentencias: BuscarSentenciasResponse,
+  ): Promise<ResultadoAnalisis> {
+    // TODO: Implementar lógica de análisis sobre las sentencias recuperadas
+    return { ...registro, estado: 'procesado' };
   }
 }

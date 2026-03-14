@@ -4,6 +4,10 @@ export interface AnalizarHttpBody {
   parametros?: Record<string, unknown>;
 }
 
+export interface ObtenerDocumentoHttpBody {
+  idCodigoAcceso: string;
+}
+
 export interface ErrorResponse {
   error: string;
   detail?: string;

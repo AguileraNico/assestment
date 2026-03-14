@@ -11,5 +11,6 @@ const service = new JurisprudenciaService(repository);
 const controller = new JurisprudenciaController(service);
 
 router.post('/analizar', controller.analizar);
+router.post('/documento', controller.obtenerDocumento);
 
 export default router;
