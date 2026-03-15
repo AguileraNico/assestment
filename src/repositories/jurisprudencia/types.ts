@@ -38,3 +38,16 @@ export interface DocumentoSentencia {
   nroExpediente: string;
   texto: string;
 }
+
+export interface ResumenSentencia {
+  idCodigoAcceso: string;
+  nroRegistro: string;
+  fecha: string;
+  caratula: string;
+  actora: string;
+  demandada: string;
+  tipoAccion: string;
+  organismo: string;
+  extracto: string;    // primeros ~800 chars del texto
+  resolucion: string;  // últimos ~500 chars del texto
+}

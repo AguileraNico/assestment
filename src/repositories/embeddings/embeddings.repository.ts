@@ -1,4 +1,8 @@
 import { EmbeddingEntry, SimilarityResult } from './types';
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { join } from 'path';
+
+const STORE_PATH = join(process.cwd(), 'data', 'embeddings.json');
 
 // Cargamos el modelo una sola vez (lazy singleton)
 let embedderPromise: Promise<any> | null = null;
@@ -12,9 +16,34 @@ function getEmbedder(): Promise<any> {
   return embedderPromise;
 }
 
+function cargarStore(): EmbeddingEntry[] {
+  try {
+    if (existsSync(STORE_PATH)) {
+      const entries = JSON.parse(readFileSync(STORE_PATH, 'utf-8')) as EmbeddingEntry[];
+      console.log(`[EmbeddingsRepository] Cargados ${entries.length} embeddings desde disco.`);
+      return entries;
+    }
+  } catch (e) {
+    console.error('[EmbeddingsRepository] Error leyendo embeddings.json:', e);
+  }
+  return [];
+}
+
 export class EmbeddingsRepository {
-  // Vector store en memoria — reemplazar por Qdrant/pgvector en producción
-  private readonly store: EmbeddingEntry[] = [];
+  private readonly store: EmbeddingEntry[];
+
+  constructor() {
+    mkdirSync(join(process.cwd(), 'data'), { recursive: true });
+    this.store = cargarStore();
+  }
+
+  private persistir(): void {
+    try {
+      writeFileSync(STORE_PATH, JSON.stringify(this.store), 'utf-8');
+    } catch (e) {
+      console.error('[EmbeddingsRepository] Error guardando embeddings.json:', e);
+    }
+  }
 
   async generarEmbedding(texto: string): Promise<number[]> {
     const embedder = await getEmbedder();
@@ -37,6 +66,7 @@ export class EmbeddingsRepository {
       this.store.push(stored);    // insertar
     }
 
+    this.persistir();
     return stored;
   }
 

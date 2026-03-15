@@ -11,7 +11,7 @@ export class AnalisisService {
   ) {}
 
   async analizar(req: AnalizarConsultaRequest): Promise<AnalizarConsultaResult> {
-    const { consulta, topK = 3 } = req;
+    const { consulta, topK = 3, umbralSimilitud = 0.75 } = req;
 
     console.log(`[Analisis] Generando embedding para consulta...`);
     const embedding = await this.embeddingsRepository.generarEmbedding(consulta);
@@ -19,11 +19,29 @@ export class AnalisisService {
     console.log(`[Analisis] Buscando los ${topK} fallos más similares...`);
     const similares = this.embeddingsRepository.buscarSimilares(embedding, topK);
 
-    console.log(`[Analisis] Fallos encontrados: ${similares.map((s) => s.nroRegistro).join(', ')}`);
+    const relevantes = similares.filter((s) => s.score >= umbralSimilitud);
+
+    console.log(`[Analisis] Fallos encontrados: ${similares.map((s) => `${s.nroRegistro}(${s.score.toFixed(2)})`).join(', ')}`);
+    console.log(`[Analisis] Relevantes (score >= ${umbralSimilitud}): ${relevantes.length}`);
+
+    if (relevantes.length === 0) {
+      return {
+        id: crypto.randomUUID(),
+        consulta,
+        sinCoincidencias: true,
+        casosUsados: similares.map((s) => ({
+          nroRegistro: s.nroRegistro,
+          caratula: s.caratula,
+          score: Math.round(s.score * 1000) / 1000,
+        })),
+        respuesta: null,
+        timestamp: new Date().toISOString(),
+      };
+    }
 
     // Traer el texto completo de cada fallo para pasarlo como contexto
     const textos = await Promise.all(
-      similares.map(async (s) => {
+      relevantes.map(async (s) => {
         try {
           const doc = await this.jurisprudenciaRepository.obtenerDocumento(s.idCodigoAcceso);
           return doc.texto;
@@ -34,12 +52,12 @@ export class AnalisisService {
     );
 
     console.log(`[Analisis] Enviando a Groq...`);
-    const resultado = await this.analisisRepository.analizar(consulta, similares, textos);
+    const resultado = await this.analisisRepository.analizar(consulta, relevantes, textos);
 
     return {
       id: resultado.id,
       consulta: resultado.consulta,
-      casosUsados: similares.map((s) => ({
+      casosUsados: relevantes.map((s) => ({
         nroRegistro: s.nroRegistro,
         caratula: s.caratula,
         score: Math.round(s.score * 1000) / 1000,
