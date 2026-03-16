@@ -11,7 +11,12 @@ const app = express();
 const PORT = process.env.PORT ?? 3000;
 
 // Middlewares
-app.use(cors());
+const allowedOrigins =
+  process.env.NODE_ENV === 'production'
+    ? (process.env.ALLOWED_ORIGINS ?? '').split(',').map(o => o.trim()).filter(Boolean)
+    : true; // en dev acepta cualquier origen
+
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
