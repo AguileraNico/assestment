@@ -6,7 +6,7 @@ export class AnalisisController {
   constructor(private readonly service: AnalisisService) {}
 
   analizar = async (req: Request<{}, {}, AnalizarConsultaHttpBody>, res: Response): Promise<void> => {
-    const { consulta, topK } = req.body;
+    const { consulta, topK, umbralSimilitud } = req.body;
 
     if (!consulta) {
       res.status(400).json({
@@ -23,7 +23,7 @@ export class AnalisisController {
     }
 
     try {
-      const resultado = await this.service.analizar({ consulta, topK });
+      const resultado = await this.service.analizar({ consulta, topK, umbralSimilitud });
       res.status(200).json(resultado);
     } catch (error) {
       console.error('Error en AnalisisController.analizar:', error);

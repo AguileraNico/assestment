@@ -35,9 +35,9 @@ export class EmbeddingsService {
           estructurada.facts,
           estructurada.decision_summary,
           estructurada.outcome,
-          estructurada.key_arguments.join(' '),
-          estructurada.keywords.join(' '),
-          estructurada.legal_issues.join(' '),
+          (estructurada.key_arguments ?? []).join(' '),
+          (estructurada.keywords ?? []).join(' '),
+          (estructurada.legal_issues ?? []).join(' '),
         ]
           .filter(Boolean)
           .join('\n');

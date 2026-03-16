@@ -23,13 +23,20 @@ export interface SentenciaEstructurada {
 }
 
 export interface SimilarCase {
+  case_id: string;
   case_name: string;
-  similarity_reason: string;
+  facts_similarity: string;
+  decision: string;
+  rejection_reason: 'merits' | 'prescription' | 'incompetence' | 'res_judicata' | 'other' | null;
+  relevance: 'high' | 'medium' | 'low';
+  supports_client: boolean;
 }
 
 export interface AnalisisRespuesta {
   case_summary: string;
   similar_cases: SimilarCase[];
+  cases_supporting_client: number;
+  cases_against_client: number;
   favorable_factors: string[];
   risk_factors: string[];
   suggested_arguments: string[];
