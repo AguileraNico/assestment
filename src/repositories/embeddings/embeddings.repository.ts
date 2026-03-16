@@ -1,8 +1,8 @@
 import { EmbeddingEntry, SimilarityResult } from './types';
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync } from 'fs';
 import { join } from 'path';
 
-const STORE_PATH = join(process.cwd(), 'data', 'embeddings.json');
+const EMBEDDINGS_DIR = join(process.cwd(), 'data', 'embeddings');
 
 // Cargamos el modelo una sola vez (lazy singleton)
 let embedderPromise: Promise<any> | null = null;
@@ -18,30 +18,32 @@ function getEmbedder(): Promise<any> {
 
 function cargarStore(): EmbeddingEntry[] {
   try {
-    if (existsSync(STORE_PATH)) {
-      const entries = JSON.parse(readFileSync(STORE_PATH, 'utf-8')) as EmbeddingEntry[];
-      console.log(`[EmbeddingsRepository] Cargados ${entries.length} embeddings desde disco.`);
-      return entries;
-    }
+    if (!existsSync(EMBEDDINGS_DIR)) return [];
+    const archivos = readdirSync(EMBEDDINGS_DIR).filter((f) => f.endsWith('.json'));
+    const entries = archivos.map((f) => {
+      return JSON.parse(readFileSync(join(EMBEDDINGS_DIR, f), 'utf-8')) as EmbeddingEntry;
+    });
+    console.log(`[EmbeddingsRepository] Cargados ${entries.length} embeddings desde disco.`);
+    return entries;
   } catch (e) {
-    console.error('[EmbeddingsRepository] Error leyendo embeddings.json:', e);
+    console.error('[EmbeddingsRepository] Error leyendo embeddings desde disco:', e);
+    return [];
   }
-  return [];
 }
 
 export class EmbeddingsRepository {
   private readonly store: EmbeddingEntry[];
 
   constructor() {
-    mkdirSync(join(process.cwd(), 'data'), { recursive: true });
+    mkdirSync(EMBEDDINGS_DIR, { recursive: true });
     this.store = cargarStore();
   }
 
-  private persistir(): void {
+  private persistirEntrada(entry: EmbeddingEntry): void {
     try {
-      writeFileSync(STORE_PATH, JSON.stringify(this.store), 'utf-8');
+      writeFileSync(join(EMBEDDINGS_DIR, `${entry.idCodigoAcceso}.json`), JSON.stringify(entry), 'utf-8');
     } catch (e) {
-      console.error('[EmbeddingsRepository] Error guardando embeddings.json:', e);
+      console.error(`[EmbeddingsRepository] Error guardando ${entry.idCodigoAcceso}.json:`, e);
     }
   }
 
@@ -61,12 +63,12 @@ export class EmbeddingsRepository {
     const stored: EmbeddingEntry = { ...meta, embedding };
 
     if (existe >= 0) {
-      this.store[existe] = stored; // actualizar
+      this.store[existe] = stored;
     } else {
-      this.store.push(stored);    // insertar
+      this.store.push(stored);
     }
 
-    this.persistir();
+    this.persistirEntrada(stored);
     return stored;
   }
 

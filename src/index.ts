@@ -1,20 +1,31 @@
 import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 import jurisprudenciaRouter from './routes/jurisprudencia/jurisprudencia';
 import embeddingsRouter from './routes/embeddings/embeddings';
 import analisisRouter from './routes/analisis/analisis';
+import authRouter from './routes/auth/auth';
+import { authMiddleware } from './middleware/auth';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
 // Middlewares
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
-app.use('/jurisprudencia', jurisprudenciaRouter);
-app.use('/embeddings', embeddingsRouter);
-app.use('/analisis', analisisRouter);
+// Rutas públicas
+app.use('/auth', authRouter);
+
+// Rutas protegidas — solo en desarrollo
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/jurisprudencia', authMiddleware, jurisprudenciaRouter);
+  app.use('/embeddings', authMiddleware, embeddingsRouter);
+}
+
+// Rutas protegidas — disponibles en todos los entornos
+app.use('/analisis', authMiddleware, analisisRouter);
 
 // Health check
 app.get('/health', (_req: Request, res: Response) => {

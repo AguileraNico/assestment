@@ -1,2 +1,12 @@
 node_modules/
+dist/
+
+# Variables de entorno
 .env
+.env.*
+
+# Datos generados (viven en Cloud Storage en producción)
+data/
+
+# Logs
+*.log
