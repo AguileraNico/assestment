@@ -30,6 +30,7 @@ export class AnalisisService {
         consulta,
         sinCoincidencias: true,
         casosUsados: similares.map((s) => ({
+          idCodigoAcceso: s.idCodigoAcceso,
           nroRegistro: s.nroRegistro,
           caratula: s.caratula,
           score: Math.round(s.score * 1000) / 1000,
@@ -58,6 +59,7 @@ export class AnalisisService {
       id: resultado.id,
       consulta: resultado.consulta,
       casosUsados: relevantes.map((s) => ({
+        idCodigoAcceso: s.idCodigoAcceso,
         nroRegistro: s.nroRegistro,
         caratula: s.caratula,
         score: Math.round(s.score * 1000) / 1000,

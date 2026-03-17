@@ -11,6 +11,7 @@ export interface AnalizarConsultaResult {
   consulta: string;
   sinCoincidencias?: true;
   casosUsados: {
+    idCodigoAcceso: string;
     nroRegistro: string;
     caratula: string;
     score: number;

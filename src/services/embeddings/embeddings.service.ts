@@ -27,26 +27,11 @@ export class EmbeddingsService {
 
         const doc = await this.jurisprudenciaRepository.obtenerDocumento(sentencia.idCodigoAcceso);
 
-        const estructurada = await this.analisisRepository.resumirParaEmbedding(sentencia, doc);
-
-        const textoEmbedding = [
-          estructurada.case_type,
-          estructurada.area,
-          estructurada.facts,
-          estructurada.decision_summary,
-          estructurada.outcome,
-          (estructurada.key_arguments ?? []).join(' '),
-          (estructurada.keywords ?? []).join(' '),
-          (estructurada.legal_issues ?? []).join(' '),
-        ]
-          .filter(Boolean)
-          .join('\n');
-
         await this.embeddingsRepository.guardar({
           idCodigoAcceso: sentencia.idCodigoAcceso,
           nroRegistro: sentencia.nroRegistro,
           caratula: sentencia.caratula,
-          texto: textoEmbedding || sentencia.caratula,
+          texto: doc.texto || sentencia.caratula,
         });
 
         documentos.push({

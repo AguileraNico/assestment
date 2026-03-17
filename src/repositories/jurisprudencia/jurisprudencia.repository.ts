@@ -120,19 +120,47 @@ export class JurisprudenciaRepository {
     const nroExpediente = causaTexto.match(/Número:\s*([^\s]+)/)?.[1] ?? '';
 
     // Texto completo del fallo: segundo card
-    const textoParrafos: string[] = [];
+    const parrafos: string[] = [];
     $('.card').eq(1).find('p').each((_i, el) => {
       const parrafo = $(el).text().trim();
-      if (parrafo) textoParrafos.push(parrafo);
+      if (parrafo) parrafos.push(parrafo);
     });
+
+    // Eliminamos la sección de VOTACIÓN (desarrollo argumental de los jueces).
+    // Conservamos ANTECEDENTES (hechos) y SENTENCIA (resolución final).
+    const textoCompleto = parrafos.join('\n\n');
+    const texto = this.extraerSeccionesRelevantes(textoCompleto);
 
     return {
       idCodigoAcceso,
       organismo,
       causa,
       nroExpediente,
-      texto: textoParrafos.join('\n\n'),
+      texto,
     };
+  }
+
+  private extraerSeccionesRelevantes(texto: string): string {
+    // El encabezado de sección aparece como "V O T A C I Ó N" (letras separadas por espacios)
+    // o como "VOTACIÓN" solo en su línea. NO queremos matchear "votación" dentro de un párrafo.
+    const patronVotacion = /^V\s+O\s+T\s+A\s+C\s+I\s+[OÓ]\s+N\s*$/im;
+    const patronSentencia = /^S\s+E\s+N\s+T\s+E\s+N\s+C\s+I\s+A\s*$/im;
+
+    const idxVotacion = texto.search(patronVotacion);
+    const idxSentencia = texto.search(patronSentencia);
+
+    // Si no tiene estructura de acuerdo, devolvemos el texto tal cual
+    if (idxVotacion === -1) return texto;
+
+    const antesDeVotacion = texto.slice(0, idxVotacion).trim();
+
+    // Si hay SENTENCIA después de la VOTACIÓN, la incluimos
+    const despuesDeSentencia =
+      idxSentencia > idxVotacion
+        ? texto.slice(idxSentencia).trim()
+        : '';
+
+    return [antesDeVotacion, despuesDeSentencia].filter(Boolean).join('\n\n');
   }
 
   private parsearTablaHtml(html: string): BuscarSentenciasResponse {
