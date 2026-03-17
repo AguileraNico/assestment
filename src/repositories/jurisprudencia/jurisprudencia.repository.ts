@@ -12,15 +12,22 @@ import { AnalizarRequest } from '../../services/jurisprudencia/types';
 
 const SCBA_BASE_URL = 'https://sentencias-corte.scba.gov.ar/RegistroElectronico';
 
-const DEFAULT_PAYLOAD: BuscarSentenciasPayload = {
-  fDesde: '03/02/2025',
-  fHasta: '14/03/2026',
+const DEFAULT_ORGANISMO = {
   idOrganismo: '292',
   idRegistro: '4',
   nombreOrganismo: ' SECRETARIA LABORAL - SUPREMA CORTE DE JUSTICIA',
   registro: ' REGISTRO DE SENTENCIAS DE SUPREMA CORTE',
   texoIncluido: '',
 };
+
+function fechasUltimoAnio(): { fDesde: string; fHasta: string } {
+  const hoy = new Date();
+  const hace1anio = new Date(hoy);
+  hace1anio.setFullYear(hoy.getFullYear() - 1);
+  const fmt = (d: Date) =>
+    `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+  return { fDesde: fmt(hace1anio), fHasta: fmt(hoy) };
+}
 
 export class JurisprudenciaRepository {
   // Almacenamiento en memoria — reemplazar por DB real
@@ -56,7 +63,7 @@ export class JurisprudenciaRepository {
   async buscarSentencias(
     payload: Partial<BuscarSentenciasPayload> = {},
   ): Promise<BuscarSentenciasResponse> {
-    const body: BuscarSentenciasPayload = { ...DEFAULT_PAYLOAD, ...payload };
+    const body: BuscarSentenciasPayload = { ...DEFAULT_ORGANISMO, ...fechasUltimoAnio(), ...payload };
 
     const response = await fetch(
       `${SCBA_BASE_URL}/BuscarRegistrosPorFechaYOrganismo`,

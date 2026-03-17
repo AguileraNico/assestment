@@ -70,7 +70,7 @@ gcloud run deploy "$SERVICE_NAME" \
   --cpu 1 \
   --min-instances 0 \
   --max-instances 1 \
-  --set-env-vars "NODE_ENV=production,HF_HOME=/app/data/models,ALLOWED_ORIGINS=https://lawapp-delta.vercel.app/" \
+  --set-env-vars "NODE_ENV=production,HF_HOME=/app/data/models,ALLOWED_ORIGINS=https://lawapp-delta.vercel.app" \
   --update-secrets "GROQ_API_KEY=GROQ_API_KEY:latest,APP_USER=APP_USER:latest,APP_PASSWORD=APP_PASSWORD:latest,JWT_SECRET=JWT_SECRET:latest" \
   --add-volume name=data,type=cloud-storage,bucket="$BUCKET" \
   --add-volume-mount volume=data,mount-path=/app/data \
