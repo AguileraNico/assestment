@@ -36,7 +36,8 @@ export interface DocumentoSentencia {
   organismo: string;
   causa: string;
   nroExpediente: string;
-  texto: string;
+  hechos: string;
+  decision: string;
 }
 
 export interface ResumenSentencia {

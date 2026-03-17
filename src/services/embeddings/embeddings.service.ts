@@ -31,13 +31,15 @@ export class EmbeddingsService {
           idCodigoAcceso: sentencia.idCodigoAcceso,
           nroRegistro: sentencia.nroRegistro,
           caratula: sentencia.caratula,
-          texto: doc.texto || sentencia.caratula,
+          decision: doc.decision,
+          texto: doc.hechos || sentencia.caratula,
         });
 
         documentos.push({
           idCodigoAcceso: sentencia.idCodigoAcceso,
           nroRegistro: sentencia.nroRegistro,
           caratula: sentencia.caratula,
+          decision: doc.decision,
           estado: 'ok',
         });
       } catch (error) {
@@ -46,6 +48,7 @@ export class EmbeddingsService {
           idCodigoAcceso: sentencia.idCodigoAcceso,
           nroRegistro: sentencia.nroRegistro,
           caratula: sentencia.caratula,
+          decision: '',
           estado: 'error',
           error: error instanceof Error ? error.message : 'Error desconocido',
         });

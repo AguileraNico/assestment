@@ -6,6 +6,7 @@ export interface EmbeddingDocumentoResult {
   idCodigoAcceso: string;
   nroRegistro: string;
   caratula: string;
+  decision: string;
   estado: 'ok' | 'error';
   error?: string;
 }

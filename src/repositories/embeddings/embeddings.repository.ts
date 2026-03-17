@@ -78,6 +78,7 @@ export class EmbeddingsRepository {
         idCodigoAcceso: entry.idCodigoAcceso,
         nroRegistro: entry.nroRegistro,
         caratula: entry.caratula,
+        decision: entry.decision,
         score: this.cosineSimilarity(embedding, entry.embedding),
       }))
       .sort((a, b) => b.score - a.score)

@@ -116,59 +116,64 @@ export class JurisprudenciaRepository {
     return this.parsearDocumentoHtml(idCodigoAcceso, html);
   }
 
-  private parsearDocumentoHtml(idCodigoAcceso: string, html: string): DocumentoSentencia {
-    const $ = load(html);
+private parsearDocumentoHtml(idCodigoAcceso: string, html: string): DocumentoSentencia {
+  const $ = load(html);
 
-    // Metadata: primer card con Organismo y Causa/Número
-    const metaCard   = $('.card').first();
-    const organismo  = metaCard.find('p:contains("Organismo:")').text().replace('Organismo:', '').trim();
-    const causaTexto = metaCard.find('p:contains("Causa:")').text();
-    const causa      = causaTexto.split('-')[0].replace('Causa:', '').trim();
-    const nroExpediente = causaTexto.match(/Número:\s*([^\s]+)/)?.[1] ?? '';
+  // Metadata
+  const metaCard   = $('.card').first();
+  const organismo  = metaCard.find('p:contains("Organismo:")').text().replace('Organismo:', '').trim();
+  const causaTexto = metaCard.find('p:contains("Causa:")').text();
+  const causa      = causaTexto.split('-')[0].replace('Causa:', '').trim();
+  const nroExpediente = causaTexto.match(/Número:\s*([^\s]+)/)?.[1] ?? '';
 
-    // Texto completo del fallo: segundo card
-    const parrafos: string[] = [];
-    $('.card').eq(1).find('p').each((_i, el) => {
-      const parrafo = $(el).text().trim();
-      if (parrafo) parrafos.push(parrafo);
-    });
+  // Texto completo
+  const parrafos: string[] = [];
+  $('.card').eq(1).find('p').each((_i, el) => {
+    const parrafo = $(el).text().trim();
+    if (parrafo) parrafos.push(parrafo);
+  });
 
-    // Eliminamos la sección de VOTACIÓN (desarrollo argumental de los jueces).
-    // Conservamos ANTECEDENTES (hechos) y SENTENCIA (resolución final).
-    const textoCompleto = parrafos.join('\n\n');
-    const texto = this.extraerSeccionesRelevantes(textoCompleto);
+  const textoCompleto = parrafos.join('\n\n');
 
-    return {
-      idCodigoAcceso,
-      organismo,
-      causa,
-      nroExpediente,
-      texto,
-    };
+  // 🔥 NUEVO: separar hechos y decisión
+  const hechos = this.extraerHechos(textoCompleto);
+  const decision = this.extraerDecision(textoCompleto);
+
+  return {
+    idCodigoAcceso,
+    organismo,
+    causa,
+    nroExpediente,
+    hechos,
+    decision,
+  };
+}
+
+private extraerHechos(texto: string): string {
+  const partes = texto.split(/V\s+O\s+T\s+A\s+C\s+I\s+[OÓ]\s+N/i);
+  if (partes.length < 2) return texto;
+
+  const votacion = partes[1];
+
+  // Tomamos punto I (donde están los hechos)
+  const match = votacion.match(/I\.(.*?)(II\.|$)/s);
+
+  if (match) {
+    return match[1]
+      .replace(/\(.*?fs\..*?\)/g, '') // limpia referencias
+      .replace(/v\.\s*vered\..*?\)/g, '')
+      .trim();
   }
 
-  private extraerSeccionesRelevantes(texto: string): string {
-    // El encabezado de sección aparece como "V O T A C I Ó N" (letras separadas por espacios)
-    // o como "VOTACIÓN" solo en su línea. NO queremos matchear "votación" dentro de un párrafo.
-    const patronVotacion = /^V\s+O\s+T\s+A\s+C\s+I\s+[OÓ]\s+N\s*$/im;
-    const patronSentencia = /^S\s+E\s+N\s+T\s+E\s+N\s+C\s+I\s+A\s*$/im;
+  return votacion.trim();
+}
 
-    const idxVotacion = texto.search(patronVotacion);
-    const idxSentencia = texto.search(patronSentencia);
+private extraerDecision(texto: string): string {
+  const match = texto.match(/S\s+E\s+N\s+T\s+E\s+N\s+C\s+I\s+A([\s\S]*)$/i);
+  if (!match) return '';
 
-    // Si no tiene estructura de acuerdo, devolvemos el texto tal cual
-    if (idxVotacion === -1) return texto;
-
-    const antesDeVotacion = texto.slice(0, idxVotacion).trim();
-
-    // Si hay SENTENCIA después de la VOTACIÓN, la incluimos
-    const despuesDeSentencia =
-      idxSentencia > idxVotacion
-        ? texto.slice(idxSentencia).trim()
-        : '';
-
-    return [antesDeVotacion, despuesDeSentencia].filter(Boolean).join('\n\n');
-  }
+  return match[1].trim();
+}
 
   private parsearTablaHtml(html: string): BuscarSentenciasResponse {
     const $ = load(html);

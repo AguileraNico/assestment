@@ -25,6 +25,7 @@ export interface SentenciaEstructurada {
 export interface SimilarCase {
   case_id: string;
   case_name: string;
+  idCodigoAcceso: string | null;
   facts_similarity: string;
   decision: string;
   rejection_reason: 'merits' | 'prescription' | 'incompetence' | 'res_judicata' | 'other' | null;

@@ -1,13 +1,11 @@
 import { EmbeddingsRepository } from '../../repositories/embeddings/embeddings.repository';
 import { AnalisisRepository } from '../../repositories/analisis/analisis.repository';
-import { JurisprudenciaRepository } from '../../repositories/jurisprudencia/jurisprudencia.repository';
 import { AnalizarConsultaRequest, AnalizarConsultaResult } from './types';
 
 export class AnalisisService {
   constructor(
     private readonly embeddingsRepository: EmbeddingsRepository,
     private readonly analisisRepository: AnalisisRepository,
-    private readonly jurisprudenciaRepository: JurisprudenciaRepository,
   ) {}
 
   async analizar(req: AnalizarConsultaRequest): Promise<AnalizarConsultaResult> {
@@ -40,20 +38,20 @@ export class AnalisisService {
       };
     }
 
-    // Traer el texto completo de cada fallo para pasarlo como contexto
-    const textos = await Promise.all(
-      relevantes.map(async (s) => {
-        try {
-          const doc = await this.jurisprudenciaRepository.obtenerDocumento(s.idCodigoAcceso);
-          return doc.texto;
-        } catch {
-          return '';
-        }
-      }),
-    );
+    // La decisión ya está en el embedding — no hace falta fetchear SCBA de nuevo
+    const textos = relevantes.map((s) => s.decision ?? '');
 
     console.log(`[Analisis] Enviando a Groq...`);
     const resultado = await this.analisisRepository.analizar(consulta, relevantes, textos);
+
+    // Enriquecer similar_cases del LLM con idCodigoAcceso para que el front pueda abrir el fallo
+    const idxPorRegistro = new Map(relevantes.map((s) => [s.nroRegistro, s.idCodigoAcceso]));
+    if (resultado.respuesta?.similar_cases) {
+      resultado.respuesta.similar_cases = resultado.respuesta.similar_cases.map((sc) => ({
+        ...sc,
+        idCodigoAcceso: idxPorRegistro.get(sc.case_id) ?? null,
+      }));
+    }
 
     return {
       id: resultado.id,
