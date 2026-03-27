@@ -1,21 +1,9 @@
-import { AnalisisRespuesta } from '../../repositories/analisis/types';
+import { EndpointStubResponse } from '../../repositories/analisis/types';
 
 export interface AnalizarConsultaRequest {
-  consulta: string;
+  consulta?: string;
   topK?: number;
   umbralSimilitud?: number;
 }
 
-export interface AnalizarConsultaResult {
-  id: string;
-  consulta: string;
-  sinCoincidencias?: true;
-  casosUsados: {
-    idCodigoAcceso: string;
-    nroRegistro: string;
-    caratula: string;
-    score: number;
-  }[];
-  respuesta: AnalisisRespuesta | null;
-  timestamp: string;
-}
+export type AnalizarConsultaResult = EndpointStubResponse;

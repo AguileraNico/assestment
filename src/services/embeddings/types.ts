@@ -1,19 +1,8 @@
-export interface GenerarEmbeddingsRequest {
-  limite?: number;
-}
+import {
+  BuscarRegistrosRequest,
+  BuscarRegistrosResult,
+} from '../../repositories/embeddings/types';
 
-export interface EmbeddingDocumentoResult {
-  idCodigoAcceso: string;
-  nroRegistro: string;
-  caratula: string;
-  decision: string;
-  estado: 'ok' | 'error';
-  error?: string;
-}
+export type ConsultarRegistrosSCBARequest = BuscarRegistrosRequest;
 
-export interface GenerarEmbeddingsResult {
-  procesados: number;
-  errores: number;
-  total: number;
-  documentos: EmbeddingDocumentoResult[];
-}
+export type ConsultarRegistrosSCBAResult = BuscarRegistrosResult;

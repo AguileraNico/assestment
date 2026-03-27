@@ -1,23 +1,18 @@
 import { Request, Response } from 'express';
 import { JurisprudenciaService } from '../../services/jurisprudencia/jurisprudencia.service';
 import { AnalizarHttpBody, ObtenerDocumentoHttpBody, ErrorResponse } from './types';
+import { EndpointStubResponse } from '../../repositories/jurisprudencia/types';
 
 export class JurisprudenciaController {
   constructor(private readonly service: JurisprudenciaService) {}
 
-  analizar = async (req: Request<{}, {}, AnalizarHttpBody>, res: Response): Promise<void> => {
-    const { texto, caso, parametros } = req.body;
-
-    if (!texto && !caso) {
-      res.status(400).json({
-        error: 'Se requiere al menos el campo "texto" o "caso" en el body',
-      } satisfies ErrorResponse);
-      return;
-    }
-
+  analizar = async (
+    req: Request<{}, {}, AnalizarHttpBody>,
+    res: Response<EndpointStubResponse | ErrorResponse>,
+  ): Promise<void> => {
     try {
-      const resultado = await this.service.analizar({ texto, caso, parametros });
-      res.status(200).json(resultado);
+      const resultado = await this.service.analizar(req.body ?? {});
+      res.status(501).json(resultado);
     } catch (error) {
       console.error('Error en JurisprudenciaController.analizar:', error);
       res.status(500).json({
@@ -27,19 +22,13 @@ export class JurisprudenciaController {
     }
   };
 
-  obtenerDocumento = async (req: Request<{}, {}, ObtenerDocumentoHttpBody>, res: Response): Promise<void> => {
-    const { idCodigoAcceso } = req.body;
-
-    if (!idCodigoAcceso) {
-      res.status(400).json({
-        error: 'Se requiere el campo "idCodigoAcceso" en el body',
-      } satisfies ErrorResponse);
-      return;
-    }
-
+  obtenerDocumento = async (
+    req: Request<{}, {}, ObtenerDocumentoHttpBody>,
+    res: Response<EndpointStubResponse | ErrorResponse>,
+  ): Promise<void> => {
     try {
-      const documento = await this.service.obtenerDocumento(idCodigoAcceso);
-      res.status(200).json(documento);
+      const documento = await this.service.obtenerDocumento(req.body?.idCodigoAcceso ?? '');
+      res.status(501).json(documento);
     } catch (error) {
       console.error('Error en JurisprudenciaController.obtenerDocumento:', error);
       res.status(500).json({

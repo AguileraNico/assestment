@@ -11,7 +11,7 @@ router.post('/login', (req: Request, res: Response): void => {
   const jwtSecret = process.env.JWT_SECRET;
 
   if (!appUser || !appPassword || !jwtSecret) {
-    res.status(500).json({ error: 'Configuración de autenticación incompleta' });
+    res.status(500).json({ error: 'Configuracion de autenticacion incompleta' });
     return;
   }
 
@@ -21,7 +21,7 @@ router.post('/login', (req: Request, res: Response): void => {
   }
 
   const token = jwt.sign({ usuario }, jwtSecret, { expiresIn: '8h' });
-  res.json({ token });
+  res.status(200).json({ token });
 });
 
 export default router;

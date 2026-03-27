@@ -1,11 +1,6 @@
-export interface GenerarEmbeddingsHttpBody {
-  limite?: number;
-}
+import { BuscarRegistrosRequest } from '../../repositories/embeddings/types';
 
-export interface BuscarSimilaresHttpBody {
-  texto: string;
-  topK?: number;
-}
+export interface ConsultarRegistrosSCBAHttpBody extends BuscarRegistrosRequest {}
 
 export interface ErrorResponse {
   error: string;

@@ -1,5 +1,5 @@
 export interface AnalizarConsultaHttpBody {
-  consulta: string;
+  consulta?: string;
   topK?: number;
   umbralSimilitud?: number;
 }
