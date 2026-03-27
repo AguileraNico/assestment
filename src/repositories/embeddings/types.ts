@@ -18,6 +18,12 @@ export interface BuscarRegistrosPorFechaYOrganismoPayload {
 
 export interface BuscarRegistrosRequest extends Partial<BuscarRegistrosPorFechaYOrganismoPayload> {}
 
+export interface ObtenerRegistroVisualizarPayload {
+  idCodigoAcceso: string;
+}
+
+export interface ObtenerDocumentoSCBARequest extends ObtenerRegistroVisualizarPayload {}
+
 export interface RegistroSCBA {
   idCodigoAcceso: string;
   nroRegistro: string;
@@ -28,6 +34,19 @@ export interface RegistroSCBA {
 }
 
 export type BuscarRegistrosResult = RegistroSCBA[];
+
+export interface DocumentoSCBA {
+  idCodigoAcceso: string;
+  organismo: string;
+  causa: string;
+  nroExpediente: string;
+  textoCompleto: string;
+  hechos: string;
+  decision: string;
+  secciones: Record<string, string>;
+}
+
+export type ObtenerDocumentoSCBAResult = DocumentoSCBA;
 
 export interface SimilarityResult {
   idCodigoAcceso: string;

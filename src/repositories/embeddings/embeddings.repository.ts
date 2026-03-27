@@ -5,6 +5,9 @@ import {
   BuscarRegistrosRequest,
   BuscarRegistrosResult,
   RegistroSCBA,
+  ObtenerDocumentoSCBARequest,
+  ObtenerDocumentoSCBAResult,
+  DocumentoSCBA,
 } from './types';
 import { load } from 'cheerio';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync } from 'fs';
@@ -13,6 +16,8 @@ import { join } from 'path';
 const EMBEDDINGS_DIR = join(process.cwd(), 'data', 'embeddings');
 const SCBA_BUSCAR_REGISTROS_URL =
   'https://sentencias.scba.gov.ar/RegistroElectronico/BuscarRegistrosPorFechaYOrganismo';
+const SCBA_OBTENER_REGISTRO_URL =
+  'https://sentencias.scba.gov.ar/RegistroElectronico/ObtenerRegistroVisualizar/';
 
 const DEFAULT_SCBA_PAYLOAD: BuscarRegistrosPorFechaYOrganismoPayload = {
   fDesde: '01/06/2025',
@@ -152,6 +157,25 @@ export class EmbeddingsRepository {
     return registros;
   }
 
+  async obtenerRegistroVisualizar(
+    request: ObtenerDocumentoSCBARequest,
+  ): Promise<ObtenerDocumentoSCBAResult> {
+    const response = await fetch(SCBA_OBTENER_REGISTRO_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error consultando documento SCBA: ${response.status} ${response.statusText}`);
+    }
+
+    const html = await response.text();
+    return this.parsearDocumentoDesdeHtml(request.idCodigoAcceso, html);
+  }
+
   private parsearRegistrosDesdeHtml(html: string): RegistroSCBA[] {
     const $ = load(html);
     const registros: RegistroSCBA[] = [];
@@ -179,5 +203,75 @@ export class EmbeddingsRepository {
     });
 
     return registros;
+  }
+
+  private parsearDocumentoDesdeHtml(idCodigoAcceso: string, html: string): DocumentoSCBA {
+    const $ = load(html);
+
+    const textoCompleto = $('p')
+      .toArray()
+      .map((el) => $(el).text().replace(/\s+/g, ' ').trim())
+      .filter(Boolean)
+      .join('\n\n');
+
+    const organismo = $('.card .card-header').first().text().replace(/\s+/g, ' ').trim() || 'SCBA';
+    const causa =
+      $('.card .card-body strong').first().text().replace(/\s+/g, ' ').trim() ||
+      $('title').text().replace(/\s+/g, ' ').trim();
+
+    const nroExpedienteMatch = html.match(/Expediente\s*N[°º]\s*([\w\-/]+)/i);
+    const nroExpediente = nroExpedienteMatch?.[1]?.trim() ?? '';
+
+    const secciones = this.extraerSecciones(textoCompleto);
+
+    return {
+      idCodigoAcceso,
+      organismo,
+      causa,
+      nroExpediente,
+      textoCompleto,
+      hechos: secciones.antecedentes_y_objeto || this.extraerHechos(textoCompleto),
+      decision: secciones.sentencia || this.extraerDecision(textoCompleto),
+      secciones,
+    };
+  }
+
+  private extraerSecciones(texto: string): Record<string, string> {
+    const secciones: Record<string, string> = {};
+
+    const idxAntecedentes = texto.search(/A\s*N\s*T\s*E\s*C\s*E\s*N\s*T\s*E\s*S\s*Y\s*O\s*B\s*J\s*E\s*T\s*O/i);
+    const idxSentencia = texto.search(/S\s*E\s*N\s*T\s*E\s*N\s*C\s*I\s*A/i);
+
+    if (idxAntecedentes >= 0) {
+      const finAntecedentes = idxSentencia > idxAntecedentes ? idxSentencia : texto.length;
+      secciones.antecedentes_y_objeto = texto.slice(idxAntecedentes, finAntecedentes).trim();
+    }
+
+    if (idxSentencia >= 0) {
+      secciones.sentencia = texto.slice(idxSentencia).trim();
+    }
+
+    return secciones;
+  }
+
+  private extraerHechos(texto: string): string {
+    const patrones = [
+      /A\s*N\s*T\s*E\s*C\s*E\s*N\s*T\s*E\s*S\s*Y\s*O\s*B\s*J\s*E\s*T\s*O([\s\S]*?)(?=S\s*E\s*N\s*T\s*E\s*N\s*C\s*I\s*A|$)/i,
+      /CUESTIONES\s+DE\s+HECHO([\s\S]*?)(?=S\s*E\s*N\s*T\s*E\s*N\s*C\s*I\s*A|$)/i,
+    ];
+
+    for (const p of patrones) {
+      const m = texto.match(p);
+      if (m?.[1]) return m[1].trim();
+    }
+
+    return texto.slice(0, 2500).trim();
+  }
+
+  private extraerDecision(texto: string): string {
+    const match = texto.match(/(S\s*E\s*N\s*T\s*E\s*N\s*C\s*I\s*A|RESUELVE|POR\s+ELLO)([\s\S]*)$/i);
+    const decision = match?.[0]?.trim();
+    if (decision) return decision;
+    return texto.slice(-2500).trim();
   }
 }
