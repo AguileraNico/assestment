@@ -28,6 +28,15 @@ export interface DocumentoRAG {
   caratula: string;
   antecedentes: string;
   sentencia: string;
+  hechos_estructurados?: {
+    que_paso: string;
+    evento: string;
+    contexto: string;
+    actores: string;
+    consecuencia: string;
+    controversia: string;
+    explicacion: string;
+  };
 }
 
 export interface DocumentoProcesadoCache extends DocumentoRAG {
@@ -39,4 +48,30 @@ export interface PrepararRAGResult {
   procesados: number;
   errores: number;
   documentos: DocumentoRAG[];
+}
+
+export interface GenerarEmbeddingsRequest {
+  limite?: number;
+}
+
+export interface GenerarEmbeddingsResult {
+  totalDisponibles: number;
+  procesados: number;
+  errores: number;
+}
+
+export interface BuscarPorConsultaRequest {
+  consulta: string;
+  topK?: number;
+}
+
+export interface BuscarPorConsultaResult {
+  consulta: string;
+  resultados: Array<{
+    idCodigoAcceso: string;
+    nroRegistro: string;
+    caratula: string;
+    score: number;
+  }>;
+  totalEncontrados: number;
 }

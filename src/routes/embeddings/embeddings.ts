@@ -11,8 +11,9 @@ const service = new EmbeddingsService(embeddingsRepository);
 const controller = new EmbeddingsController(service);
 
 router.post('/consultar', controller.consultarRegistrosSCBA);
-router.post('/generar', controller.consultarRegistrosSCBA);
+router.post('/generar', controller.generarEmbeddings);
 router.post('/documento', controller.consultarDocumentoSCBA);
 router.post('/preparar-rag', controller.prepararRAG);
+router.post('/buscar', controller.buscarPorConsulta);
 
 export default router;

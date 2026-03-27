@@ -1,10 +1,18 @@
 import { Request, Response } from 'express';
 import { EmbeddingsService } from '../../services/embeddings/embeddings.service';
-import { ConsultarRegistrosSCBAHttpBody, ErrorResponse, PrepararRAGHttpBody } from './types';
+import {
+  ConsultarRegistrosSCBAHttpBody,
+  ErrorResponse,
+  PrepararRAGHttpBody,
+  GenerarEmbeddingsHttpBody,
+  BuscarPorConsultaHttpBody,
+} from './types';
 import {
   ConsultarRegistrosSCBAResult,
   ConsultarDocumentoSCBAResult,
   PrepararRAGResult,
+  GenerarEmbeddingsResult,
+  BuscarPorConsultaResult,
 } from '../../services/embeddings/types';
 
 export class EmbeddingsController {
@@ -53,6 +61,38 @@ export class EmbeddingsController {
       console.error('Error en EmbeddingsController.prepararRAG:', error);
       res.status(500).json({
         error: 'Error al preparar RAG',
+        detail: error instanceof Error ? error.message : 'Error desconocido',
+      } satisfies ErrorResponse);
+    }
+  };
+
+  generarEmbeddings = async (
+    req: Request<{}, {}, GenerarEmbeddingsHttpBody>,
+    res: Response<GenerarEmbeddingsResult | ErrorResponse>,
+  ): Promise<void> => {
+    try {
+      const resultado = await this.service.generarEmbeddings(req.body ?? {});
+      res.status(200).json(resultado);
+    } catch (error) {
+      console.error('Error en EmbeddingsController.generarEmbeddings:', error);
+      res.status(500).json({
+        error: 'Error al generar embeddings',
+        detail: error instanceof Error ? error.message : 'Error desconocido',
+      } satisfies ErrorResponse);
+    }
+  };
+
+  buscarPorConsulta = async (
+    req: Request<{}, {}, BuscarPorConsultaHttpBody>,
+    res: Response<BuscarPorConsultaResult | ErrorResponse>,
+  ): Promise<void> => {
+    try {
+      const resultado = await this.service.buscarPorConsulta(req.body);
+      res.status(200).json(resultado);
+    } catch (error) {
+      console.error('Error en EmbeddingsController.buscarPorConsulta:', error);
+      res.status(500).json({
+        error: 'Error en búsqueda semántica',
         detail: error instanceof Error ? error.message : 'Error desconocido',
       } satisfies ErrorResponse);
     }

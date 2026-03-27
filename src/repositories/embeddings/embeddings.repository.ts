@@ -44,7 +44,7 @@ let embedderPromise: Promise<Embedder> | null = null;
 function getEmbedder(): Promise<Embedder> {
   if (!embedderPromise) {
     embedderPromise = import('@xenova/transformers').then(({ pipeline }) =>
-      pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2') as Promise<Embedder>,
+      pipeline('feature-extraction', 'Xenova/paraphrase-multilingual-MiniLM-L12-v2') as Promise<Embedder>,
     );
   }
   return embedderPromise;
