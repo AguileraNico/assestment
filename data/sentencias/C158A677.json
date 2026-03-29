@@ -1,0 +1,18 @@
+{
+  "idCodigoAcceso": "C158A677",
+  "nroRegistro": "RS-535-2025",
+  "nroExpediente": "34487",
+  "caratula": "SEQUEIRA JOSE OSVALDO C/ FISCO DE LA PROVINCIA DE BUENOS AIRES S/ACCIDENTE DE TRABAJO - ACCION ESPECIAL",
+  "antecedentes": "El actor sufrió un accidente de trabajo el día 18/12/2006, aceptado por PROVINCIA ART. La Comisión Médica N°012-L determinó un 13% de ILPPD, por el cual el actor percibió la suma de $18.539,25 en concepto de prestaciones dinerarias. Posteriormente, el Ministerio de Seguridad de la Provincia de Buenos Aires declaró que las lesiones de carácter grave sufridas por el actor habían resultado imputables al servicio. La Junta Superior de Reconocimientos Médicos dictaminó que el actor presentaba una incapacidad total y permanente del 66% para las tareas policiales, adquiridas mediante la relación de dependencia, imputables al servicio según Resolución N°2837/07. Finalmente, el Ministerio de Justicia y Seguridad de la Provincia de Buenos Aires dispuso el retiro obligatorio por incapacidad física del actor.",
+  "sentencia": "Sentencia que prescribe el artículo 54 inciso \"d\" de la ley 15.057, en la causa caratulada \"Sequeira Jose Osvaldo C/ Fisco De La Provincia De Buenos Aires S/Accidente De Trabajo - Accion Especial\" Expte. 34.487. A tal fin se practica sorteo, resultando que en la votación debe observarse el siguiente orden: Marcasciano - Bordino - Vigliarolo. Acto seguido, la jueza Marcasciano dijo: 1. ANTECEDENTES Y OBJETO: I. El 17/04/2012 se presentó el actor José Osvaldo Sequeira (DNI 22.284.125) por intermedio de sus letrados apoderados Ricardo Faustino López y Lorena Barone, promoviendo demanda por el cobro prestaciones dinerarias de la ley 24.557, ampliaciones y modificatorias contra el Fisco de la Provincia de Buenos Aires, en su calidad de empleador autoasegurado. A tal fin, relataron el accidente sufrido por el accionante con fecha 18/12/2006, cuando en circunstancias en las que realizando sus tareas habituales como policía, tras recibir una alerta radial el actor comenzó una persecución contra delincuentes y uno de ellos efectuó disparos de arma de fuego, los cuales impactaron en su muslo derecho y axila izquierda con orificios de entrada y de salida. Al respecto, describieron la atención médica recibida por la ART y las prestaciones dinerarias percibidas en el marco de la Comisión Médica. Seguidamente plantearon la inconstitucionalidad de diversos preceptos de la ley 24.557 sus compl...",
+  "hechos_estructurados": {
+    "que_paso": "El actor sufrió un accidente de trabajo el día 18/12/2006.",
+    "evento": "Accidente de trabajo",
+    "contexto": "El accidente ocurrió el día 18/12/2006",
+    "actores": "El actor, PROVINCIA ART",
+    "consecuencia": "El actor percibió la suma de $18.539,25 en concepto de prestaciones dinerarias",
+    "controversia": "No surge",
+    "explicacion": "El actor sufrió un accidente de trabajo el día 18/12/2006, aceptado por PROVINCIA ART. La Comisión Médica N°012-L determinó un 13% de ILPPD, por el cual el actor percibió la suma de $18.539,25 en concepto de prestaciones dinerarias. Posteriormente, el Ministerio de Seguridad de la Provincia de Buenos Aires declaró que las lesiones de carácter grave sufridas por el actor habían resultado imputables al servicio. La Junta Superior de Reconocimientos Médicos dictaminó que el actor presentaba una incapacidad total y permanente del 66% para las tareas policiales, adquiridas mediante la relación de dependencia, imputables al servicio según Resolución N°2837/07. Finalmente, el Ministerio de Justicia y Seguridad de la Provincia de Buenos Aires dispuso el retiro obligatorio por incapacidad física del actor."
+  },
+  "timestamp": "2026-03-27T20:13:22.688Z"
+}

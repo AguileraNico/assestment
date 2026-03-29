@@ -12,8 +12,14 @@ import {
   GenerarEmbeddingsResult,
   BuscarPorConsultaRequest,
   BuscarPorConsultaResult,
+  ResultadoBusqueda,
 } from './types';
-import { DocumentoSCBA, RegistroSCBA } from '../../repositories/embeddings/types';
+import {
+  DocumentoSCBA,
+  EmbeddingIndice,
+  EmbeddingSubindice,
+  RegistroSCBA,
+} from '../../repositories/embeddings/types';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import Groq from 'groq-sdk';
@@ -162,10 +168,29 @@ export class EmbeddingsService {
         const cached = JSON.parse(readFileSync(cachePath, 'utf-8')) as DocumentoProcesadoCache;
 
         const textoBase = this.construirTextoParaEmbedding(cached);
+        const { demandante, demandado, tipo_causa } = this.parsearCaratula(cached.caratula);
+        const resultado_causa = this.detectarGanador(cached.sentencia || '');
+        const indice = this.clasificarIndice(cached.caratula, cached.hechos_estructurados?.que_paso, tipo_causa);
+        const subindice = this.clasificarSubindice(
+          indice,
+          cached.caratula,
+          cached.hechos_estructurados?.que_paso,
+          tipo_causa,
+          cached.sentencia,
+        );
+
         await this.embeddingsRepository.guardar({
           idCodigoAcceso: cached.idCodigoAcceso,
           nroRegistro: cached.nroRegistro,
           caratula: cached.caratula,
+          indice,
+          subindice,
+          demandante,
+          demandado,
+          tipoCausa: tipo_causa,
+          quePaso: cached.hechos_estructurados?.que_paso ?? 'No disponible',
+          resultadoCausa: resultado_causa,
+          hechosExplicacion: cached.hechos_estructurados?.explicacion ?? cached.antecedentes,
           decision: cached.sentencia,
           texto: textoBase,
         });
@@ -185,38 +210,341 @@ export class EmbeddingsService {
   }
 
   async buscarPorConsulta(request: BuscarPorConsultaRequest): Promise<BuscarPorConsultaResult> {
-    const { consulta, topK = 5 } = request;
+    const { consulta, topK = 5, generarRespuesta = false, indice, subindice } = request;
 
     if (!consulta || consulta.trim().length === 0) {
-      return {
-        consulta,
-        resultados: [],
-        totalEncontrados: 0,
-      };
+      return { consulta, resultados: [], totalEncontrados: 0 };
     }
 
     try {
       const queryEmbedding = await this.embeddingsRepository.generarEmbedding(consulta);
-      const resultados = this.embeddingsRepository.buscarSimilares(queryEmbedding, topK);
+      const indiceUsado = indice ?? this.inferirIndiceConsulta(consulta);
+      const subindiceUsado = subindice ?? this.inferirSubindiceConsulta(consulta, indiceUsado);
+      const candidatos = this.embeddingsRepository.buscarSimilares(
+        queryEmbedding,
+        Math.max(topK * 6, 20),
+        indiceUsado,
+        subindiceUsado,
+      );
+      const consultaNorm = this.normalizarTexto(this.aColoquial(consulta));
+
+      const resultados: ResultadoBusqueda[] = candidatos
+        .map((r) => {
+          const scoreBase = r.score;
+          const { demandante, demandado, tipo_causa } = this.parsearCaratula(r.caratula);
+          const resultado_causa = r.resultadoCausa || this.detectarGanador(r.decision ?? '');
+          const que_paso = r.quePaso ?? 'No disponible';
+          const textoCaso = this.normalizarTexto(
+            `${r.caratula} ${r.tipoCausa ?? tipo_causa} ${que_paso} ${resultado_causa}`,
+          );
+          const scoreAjustado = this.ajustarScorePorIntencion(consultaNorm, textoCaso, scoreBase);
+          const score = Math.round(scoreAjustado * 1000) / 1000;
+
+          return {
+            idCodigoAcceso: r.idCodigoAcceso,
+            nroRegistro: r.nroRegistro,
+            caratula: this.caratulaColoquial(r.caratula),
+            indice: r.indice,
+            subindice: r.subindice,
+            demandante: r.demandante ?? demandante,
+            demandado: r.demandado ?? demandado,
+            tipo_causa: this.aColoquial(r.tipoCausa ?? tipo_causa),
+            que_paso: this.aColoquial(que_paso),
+            resultado_causa: this.aColoquial(resultado_causa),
+            score,
+            relevancia: this.calcularRelevancia(score),
+          };
+        })
+        .sort((a, b) => b.score - a.score)
+        .slice(0, topK);
+
+      const respuesta = generarRespuesta
+        ? await this.generarRespuestaDesdeContexto(consulta, resultados)
+        : undefined;
 
       return {
         consulta,
-        resultados: resultados.map((r) => ({
-          idCodigoAcceso: r.idCodigoAcceso,
-          nroRegistro: r.nroRegistro,
-          caratula: r.caratula,
-          score: Math.round(r.score * 1000) / 1000, // Round to 3 decimals
-        })),
+        indiceUsado,
+        subindiceUsado,
+        resultados,
         totalEncontrados: resultados.length,
+        respuesta,
       };
     } catch (error) {
       console.error('[EmbeddingsService] Error en búsqueda semántica:', error);
+      return { consulta, resultados: [], totalEncontrados: 0 };
+    }
+  }
+
+  private async generarRespuestaDesdeContexto(
+    consulta: string,
+    resultados: ResultadoBusqueda[],
+  ): Promise<string> {
+    if (resultados.length === 0) {
+      return 'No se encontraron precedentes relevantes para elaborar una respuesta.';
+    }
+
+    if (!this.groqClient) {
+      const top = resultados.slice(0, 3);
+      const resumen = top
+        .map(
+          (r, i) =>
+            `${i + 1}) ${r.demandante} contra ${r.demandado} (${this.aColoquial(r.tipo_causa)}) - score ${r.score}. Que paso: ${this.aColoquial(r.que_paso)}`,
+        )
+        .join(' ');
+      return `Resumen preliminar para "${consulta}": ${resumen}`;
+    }
+
+    try {
+      const contexto = resultados
+        .slice(0, 5)
+        .map(
+          (r, i) =>
+            `Caso ${i + 1}: actor=${r.demandante}; demandado=${r.demandado}; tipo_en_lenguaje_simple=${this.aColoquial(r.tipo_causa)}; que_paso=${this.aColoquial(r.que_paso)}; resultado=${this.aColoquial(r.resultado_causa)}; score=${r.score}`,
+        )
+        .join('\n');
+
+      const completion = await this.groqClient.chat.completions.create({
+        model: this.modelHechos,
+        temperature: 0.2,
+        max_tokens: 260,
+        messages: [
+          {
+            role: 'system',
+            content:
+              'Sos un asistente que explica casos laborales en lenguaje comun de Argentina. Regla obligatoria: no uses terminologia legal ni tecnicismos. Prohibido decir "in itinere", "accion especial", "actor", "demandado" o "caratula". En su lugar usa frases simples como "mientras iba o volvia del trabajo" y "la persona que inicio el reclamo".',
+          },
+          {
+            role: 'user',
+            content:
+              `Consulta del usuario: ${this.aColoquial(consulta)}\n\nContexto de casos:\n${contexto}\n\nEscribe una respuesta breve (90-130 palabras), clara y coloquial, incluyendo: 1) quien le reclama a quien; 2) que ocurrio; 3) como vienen los resultados (si suele favorecer a quien reclama, a la empresa/ART, o no se puede saber); 4) que tan buena es la coincidencia segun scores (alta/media/baja). No uses jerga legal ni latinismos.`,
+          },
+        ],
+      });
+
+      const respuesta = completion.choices?.[0]?.message?.content?.trim();
+      if (!respuesta) {
+        return 'No fue posible generar respuesta enriquecida con IA para esta consulta.';
+      }
+      return respuesta;
+    } catch (error) {
+      console.error('[EmbeddingsService] Error generando respuesta con Groq:', error);
+      return 'No fue posible generar respuesta enriquecida con IA en este momento.';
+    }
+  }
+
+  private aColoquial(texto: string): string {
+    return texto
+      .replace(/\bin itinere\b/gi, 'mientras iba o volvia del trabajo')
+      .replace(/\baccion especial\b/gi, 'reclamo por accidente laboral')
+      .replace(/\baccidente de trabajo\b/gi, 'accidente en el trabajo')
+      .replace(/\benfermedad profesional\b/gi, 'problema de salud causado por el trabajo')
+      .replace(/\bart\b/gi, 'aseguradora de riesgos del trabajo')
+      .replace(/\bdemanda\b/gi, 'reclamo')
+      .replace(/\bactor\b/gi, 'persona que reclama')
+      .replace(/\bactora\b/gi, 'persona que reclama')
+      .replace(/\bdemandado\b/gi, 'parte reclamada')
+      .replace(/\bdemandada\b/gi, 'parte reclamada')
+      .replace(/\bcaratula\b/gi, 'titulo del caso')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private parsearCaratula(caratula: string): { demandante: string; demandado: string; tipo_causa: string } {
+    // Format: "APELLIDO NOMBRE C/ EMPRESA S/ TIPO CAUSA"
+    const matchC = caratula.match(/^(.+?)\s+[Cc]\/\s*(.+?)\s+[Ss]\/\s*(.+)$/);
+    if (matchC) {
       return {
-        consulta,
-        resultados: [],
-        totalEncontrados: 0,
+        demandante: matchC[1].trim(),
+        demandado: matchC[2].trim(),
+        tipo_causa: matchC[3].replace(/^\*/, '').trim(),
       };
     }
+    return { demandante: caratula, demandado: 'No identificado', tipo_causa: 'No identificado' };
+  }
+
+  private detectarGanador(sentencia: string): string {
+    if (!sentencia) return 'No determinado';
+    const lower = sentencia.toLowerCase();
+
+    // Buscar en el último tramo del texto donde suele estar la parte dispositiva
+    const fragmento = lower.slice(-1500);
+
+    if (/rechaz[ao]\s+(la\s+)?demanda|sin\s+lugar\s+la\s+demanda|absuelv/.test(fragmento)) {
+      return 'La parte reclamada salió favorecida (se rechazó el reclamo)';
+    }
+    if (/hace\s+lugar|hago\s+lugar|haciendo\s+lugar|condena\s+a\s+la\s+demandad|condena\s+al\s+demandad|se\s+admite\s+la\s+demanda|lugar\s+a\s+la\s+acción/.test(fragmento)) {
+      return 'La persona que reclamó salió favorecida';
+    }
+    if (/parcialmente|en\s+parte/.test(fragmento)) {
+      return 'Resultado intermedio (parcial)';
+    }
+    return 'No determinado';
+  }
+
+  private caratulaColoquial(caratula: string): string {
+    return this.aColoquial(
+      caratula
+        .replace(/\s+[Cc]\//g, ' contra ')
+        .replace(/\s+[Ss]\//g, ' por '),
+    );
+  }
+
+  private clasificarIndice(
+    caratula: string,
+    quePaso?: string,
+    tipoCausa?: string,
+  ): EmbeddingIndice {
+    const texto = this.normalizarTexto(`${caratula} ${tipoCausa ?? ''} ${quePaso ?? ''}`);
+
+    if (/despido|despedido|indemnizacion|extincion del contrato/.test(texto)) {
+      return 'despidos';
+    }
+    if (/enfermedad|artritis|dolencia|patologia|salud causado por el trabajo/.test(texto)) {
+      return 'enfermedades';
+    }
+    if (
+      /in[-\s]?itinere|mientras iba o volvia del trabajo|trayecto|camino al trabajo|camino de regreso|domicilio/.test(
+        texto,
+      )
+    ) {
+      return 'accidentes_trayecto';
+    }
+    if (/accidente|lesion|fractura|incapacidad|durante sus tareas|en el trabajo/.test(texto)) {
+      return 'accidentes_trabajo';
+    }
+    return 'otros';
+  }
+
+  private clasificarSubindice(
+    indice: EmbeddingIndice,
+    caratula: string,
+    quePaso?: string,
+    tipoCausa?: string,
+    sentencia?: string,
+  ): EmbeddingSubindice {
+    const texto = this.normalizarTexto(
+      `${caratula} ${tipoCausa ?? ''} ${quePaso ?? ''} ${sentencia ?? ''}`,
+    );
+
+    if (indice === 'despidos') {
+      if (/conciliacion|homologo|homologacion|desistimiento/.test(texto)) return 'despido_conciliacion';
+      if (/no registrado|registracion|fecha de ingreso|categoria|deficiente registracion/.test(texto)) {
+        return 'despido_registracion';
+      }
+      if (/enfermedad|artritis|patologia|dolencia|medico|salud/.test(texto)) return 'despido_enfermedad';
+      return 'despido_general';
+    }
+
+    if (indice === 'enfermedades') {
+      if (/conciliacion|homologo|homologacion|desistimiento|liquidaron/.test(texto)) {
+        return 'enfermedad_procesal';
+      }
+      if (/profesional/.test(texto)) return 'enfermedad_profesional';
+      return 'enfermedad_accidente';
+    }
+
+    if (indice === 'accidentes_trayecto') return 'trayecto_general';
+    if (indice === 'accidentes_trabajo') return 'trabajo_general';
+    return 'otro';
+  }
+
+  private inferirIndiceConsulta(consulta: string): EmbeddingIndice | undefined {
+    const texto = this.normalizarTexto(this.aColoquial(consulta));
+
+    if (/despido|despedido|echaron|indemnizacion/.test(texto)) {
+      return 'despidos';
+    }
+    if (/enfermedad|patologia|salud|dolencia/.test(texto)) {
+      return 'enfermedades';
+    }
+    if (/yendo|volviendo|trayecto|camino al trabajo|camino de regreso|domicilio|casa/.test(texto)) {
+      return 'accidentes_trayecto';
+    }
+    if (/accidente|lesion|fractura|incapacidad|aseguradora/.test(texto)) {
+      return 'accidentes_trabajo';
+    }
+    return undefined;
+  }
+
+  private inferirSubindiceConsulta(
+    consulta: string,
+    indice?: EmbeddingIndice,
+  ): EmbeddingSubindice | undefined {
+    const texto = this.normalizarTexto(this.aColoquial(consulta));
+
+    if (indice === 'despidos') {
+      if (/enfermedad|patologia|salud|dolencia/.test(texto)) return 'despido_enfermedad';
+      if (/registrado|registracion|en negro|fecha de ingreso|categoria/.test(texto)) {
+        return 'despido_registracion';
+      }
+      return 'despido_general';
+    }
+
+    if (indice === 'enfermedades') {
+      if (/profesional/.test(texto)) return 'enfermedad_profesional';
+      return 'enfermedad_accidente';
+    }
+
+    if (indice === 'accidentes_trayecto') return 'trayecto_general';
+    if (indice === 'accidentes_trabajo') return 'trabajo_general';
+    return undefined;
+  }
+
+  private normalizarTexto(texto: string): string {
+    return texto
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private ajustarScorePorIntencion(consulta: string, textoCaso: string, scoreBase: number): number {
+    let score = scoreBase;
+
+    const consultaTrayecto =
+      /(yendo|volviendo|trayecto|camino|ida|vuelta|domicilio|casa|in[-\s]?itinere)/.test(consulta);
+    const consultaLugarTrabajo =
+      /(mientras trabajaba|trabajando|en el trabajo|durante sus tareas|en su puesto|jornada laboral)/.test(
+        consulta,
+      );
+    const casoTrayecto =
+      /(yendo|volviendo|trayecto|domicilio|casa|mientras iba o volvia del trabajo|in[-\s]?itinere)/.test(
+        textoCaso,
+      );
+    const casoLugarTrabajo =
+      /(accidente en el trabajo|contexto laboral|lugar de trabajo|durante sus tareas|en su puesto)/.test(
+        textoCaso,
+      );
+    const casoProcesal = /(conciliacion|homologacion|homologo|desistimiento|liquidaron)/.test(textoCaso);
+    const consultaDespido = /(despido|despedido|echaron)/.test(consulta);
+    const consultaEnfermedad = /(enfermedad|patologia|dolencia|salud)/.test(consulta);
+
+    if (consultaTrayecto) {
+      if (casoTrayecto) score += 0.12;
+      if (!casoTrayecto) score -= 0.25;
+      if (!casoTrayecto && casoLugarTrabajo) score -= 0.1;
+    }
+
+    if (consultaLugarTrabajo) {
+      if (casoLugarTrabajo) score += 0.08;
+      if (casoTrayecto) score -= 0.22;
+    }
+
+    if ((consultaDespido || consultaEnfermedad) && casoProcesal) {
+      score -= 0.2;
+    }
+
+    if (score < 0) return 0;
+    if (score > 1) return 1;
+    return score;
+  }
+
+  private calcularRelevancia(score: number): 'alta' | 'media' | 'baja' {
+    if (score >= 0.6) return 'alta';
+    if (score >= 0.45) return 'media';
+    return 'baja';
   }
 
   private generarDocumentoRAGExtractivo(

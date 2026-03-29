@@ -1,0 +1,18 @@
+{
+  "idCodigoAcceso": "33578393",
+  "nroRegistro": "RS-1279-2025",
+  "nroExpediente": "42145",
+  "caratula": "CABALLERO NESTOR RAMON C/FISCO DE LA PROVINCIA DE BUENOS AIRES S/ ACCIDENTE IN ITINERE",
+  "antecedentes": "El trabajador sufrió un accidente el 31/12/2016 en trayecto al trabajo. PROVINCIA ART, como administradora del autoaseguro estatal, aceptó la contingencia y brindó prestaciones en especie hasta que el trabajador se recuperó el 21/04/2017. El perito médico determinó que el trabajador presentaba una fractura de astrágalo con necrosis de tobillo izquierdo que lo incapacitaba en un 19%. La pericia no fue impugnada por las partes y se consideró que la contingencia denunciada proporcionaba los requisitos de causalidad, cronología e idoneidad lesiva para considerarla con aptitud de provocar el desencadenamiento de las patologías verificadas. Se determinó que el trabajador padecía una ILPPD del 19%, incluidos los factores de ponderación, con nexo causal en el siniestro de fecha 31/12/2016.",
+  "sentencia": "Sentencia que prescribe el artículo 54 inciso \"d\" de la ley 15.057, en la causa caratulada \"CABALLERO NESTOR RAMON C/ FISCO DE LA PROVINCIA DE BUENOS AIRES S/ ACCIDENTE IN ITINERE\" Expte. 42.145. A tal fin se practica sorteo, resultando que en la votación debe observarse el siguiente orden: Bordino - Vigliarolo - Marcasciano. Acto seguido, el Juez Bordino dijo: 1. ANTECEDENTES Y OBJETO: 1.1. El 6/07/2017 se presentó el actor Nestor Ramón Caballero por intermedio de su letrado apoderado, promoviendo demanda contra el Fisco de la Provincia de Buenos Aires, en su carácter de empleador autoasegurado, con el objeto de obtener el reconocimiento de las prestaciones dinerarias previstas en la Ley 24.557 y sus modificatorias, en virtud de la incapacidad psicofísica que sostiene padecer como consecuencia del accidente camino al trabajo denunciado como ocurrido el 31/12/2016. Relató que, en ocasión de encontrase en trayecto a su lugar de trabajo en su motocicleta fue embestido por un automóvil. Informó el diagnóstico médico recibido, estimó su incapacidad psicofísica en el 25% de la T.O., solicitó la declaración de inconstitucionalidad de diversas normas legales, practicó liquidación, ofreció prueba, fundó en derecho y efectuó reserva del caso federal. 1.2. Conferido el traslado previsto en el artículo 28 de la ley 11.653, el 19/12/2018 compareció a estar a derecho el demandado Fisco de l...",
+  "hechos_estructurados": {
+    "que_paso": "PROVINCIA ART aceptó la contingencia y brindó prestaciones en especie al trabajador",
+    "evento": "No surge",
+    "contexto": "Un accidente ocurrió el día 31/12/2016 en trayecto al trabajo",
+    "actores": "PROVINCIA ART y el trabajador",
+    "consecuencia": "El trabajador recibió prestaciones en especie hasta su alta médica con fecha 21/04/2017",
+    "controversia": "No surge",
+    "explicacion": "El trabajador sufrió un accidente el 31/12/2016 en trayecto al trabajo. PROVINCIA ART, como administradora del autoaseguro estatal, aceptó la contingencia y brindó prestaciones en especie hasta que el trabajador se recuperó el 21/04/2017. El perito médico determinó que el trabajador presentaba una fractura de astrágalo con necrosis de tobillo izquierdo que lo incapacitaba en un 19%. La pericia no fue impugnada por las partes y se consideró que la contingencia denunciada proporcionaba los requisitos de causalidad, cronología e idoneidad lesiva para considerarla con aptitud de provocar el desencadenamiento de las patologías verificadas. Se determinó que el trabajador padecía una ILPPD del 19%, incluidos los factores de ponderación, con nexo causal en el siniestro de fecha 31/12/2016."
+  },
+  "timestamp": "2026-03-27T21:55:24.794Z"
+}

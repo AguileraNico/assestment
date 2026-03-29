@@ -1,0 +1,18 @@
+{
+  "idCodigoAcceso": "7DEB897F",
+  "nroRegistro": "RS-108-2026",
+  "nroExpediente": "43387",
+  "caratula": "LIZARRAGA OSCAR ALEJANDRO C/ FISCO DE LA PROVINCIA DE BUENOS AIRES S/ ACCIDENTE DE TRABAJO - ACCION ESPECIAL",
+  "antecedentes": "El actor denunció un accidente sucedido el día 4/03/2016 mientras trabajaba como amolador. La Provincia Aseguradora de Riesgos del Trabajo S.A. le brindó prestaciones en especie y otorgó el alta médica el 4/07/2016. La Comisión Médica N° 11 de La Plata determinó una incapacidad del 9,3% por lesión en dedo índice de la mano izquierda. El perito médico designado en autos determinó una incapacidad del 14% por Flexión metacarpo falángica en 0°. Sin embargo, no se fundamentó cómo llegó a esta incapacidad. Según el Decreto 659/96, la Flexión metacarpo-falángica en 0° corresponde a una incapacidad global del 8%. Por lo tanto, no se comprobó que el actor padezca un mayor grado de incapacidad respecto del que fue fijado en sede administrativa.",
+  "sentencia": "Sentencia que prescribe el artículo 54 inciso \"d\" de la ley 15.057, en la causa caratulada \"LIZARRAGA OSCAR ALEJANDRO C/ FISCO DE LA PROVINCIA DE BUENOS AIRES S/ ACCIDENTE DE TRABAJO - ACCION ESPECIAL\" expte. 43387. A tal fin se practica sorteo, resultando que en la votación debe observarse el siguiente orden: Bordino - Vigliarolo - Marcasciano. Acto seguido, el Juez Bordino dijo: 1. ANTECEDENTES Y OBJETO: 1.1. El 18/12/2017 se presentó el actor a través de su letrado apoderado, promoviendo demanda por el cobro de prestaciones dinerarias de la ley 24.557 contra el Fisco de la Provincia de Buenos Aires en relación a un accidente que denuncia acaecido en fecha 4/03/2016. 1.2. Ordenado el traslado que mandaba el artículo 28 de la ley 11.653, el 23/03/2018 compareció a estar a derecho el demandado, por intermedio de su letrado apoderado quien, tras reseñar la pretensión, formuló diversas negativas generales y particulares; reconoció el accidente, detalló las prestaciones brindadas, la incapacidad otorgada y las sumas abonadas en la instancia administrativa. Seguidamente consintió el IBM denunciado en demanda, impugnó la liquidación practicada; contestó las inconstitucionalidades planteadas y articuló la de la ley 14.399; propuso prueba, solicitó el rechazo de la demanda y planteó el caso federal. 1.3. Dispuesto el traslado que prescribía el artículo 29 de la ley 11.653, la parte ac...",
+  "hechos_estructurados": {
+    "que_paso": "El actor denunció un accidente sucedido el día 4/03/2016 mientras trabajaba como amolador.",
+    "evento": "Accidente laboral",
+    "contexto": "Trabajo como amolador",
+    "actores": "El actor y la Provincia Aseguradora de Riesgos del Trabajo S.A.",
+    "consecuencia": "La incapacidad del 9,30% de la T.O. por lesión en dedo índice de mano izquierda",
+    "controversia": "La incapacidad del 14% determinada por el perito médico",
+    "explicacion": "El actor denunció un accidente sucedido el día 4/03/2016 mientras trabajaba como amolador. La Provincia Aseguradora de Riesgos del Trabajo S.A. le brindó prestaciones en especie y otorgó el alta médica el 4/07/2016. La Comisión Médica N° 11 de La Plata determinó una incapacidad del 9,3% por lesión en dedo índice de la mano izquierda. El perito médico designado en autos determinó una incapacidad del 14% por Flexión metacarpo falángica en 0°. Sin embargo, no se fundamentó cómo llegó a esta incapacidad. Según el Decreto 659/96, la Flexión metacarpo-falángica en 0° corresponde a una incapacidad global del 8%. Por lo tanto, no se comprobó que el actor padezca un mayor grado de incapacidad respecto del que fue fijado en sede administrativa."
+  },
+  "timestamp": "2026-03-27T22:00:58.055Z"
+}

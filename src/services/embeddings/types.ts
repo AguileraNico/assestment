@@ -1,5 +1,7 @@
 import {
   BuscarRegistrosRequest,
+  EmbeddingIndice,
+  EmbeddingSubindice,
   RegistroSCBA,
   DocumentoSCBA,
   BuscarRegistrosResult,
@@ -63,15 +65,31 @@ export interface GenerarEmbeddingsResult {
 export interface BuscarPorConsultaRequest {
   consulta: string;
   topK?: number;
+  generarRespuesta?: boolean;
+  indice?: EmbeddingIndice;
+  subindice?: EmbeddingSubindice;
+}
+
+export interface ResultadoBusqueda {
+  idCodigoAcceso: string;
+  nroRegistro: string;
+  caratula: string;
+  indice: EmbeddingIndice;
+  subindice: EmbeddingSubindice;
+  demandante: string;
+  demandado: string;
+  tipo_causa: string;
+  que_paso: string;
+  resultado_causa: string;
+  score: number;
+  relevancia: 'alta' | 'media' | 'baja';
 }
 
 export interface BuscarPorConsultaResult {
   consulta: string;
-  resultados: Array<{
-    idCodigoAcceso: string;
-    nroRegistro: string;
-    caratula: string;
-    score: number;
-  }>;
+  indiceUsado?: EmbeddingIndice;
+  subindiceUsado?: EmbeddingSubindice;
+  resultados: ResultadoBusqueda[];
   totalEncontrados: number;
+  respuesta?: string;
 }

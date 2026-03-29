@@ -1,0 +1,18 @@
+{
+  "idCodigoAcceso": "C8A16FD0",
+  "nroRegistro": "RS-894-2025",
+  "nroExpediente": "39188",
+  "caratula": "RAMIREZ EDUARDO ANDRES C/ GRUPO PLAZA SA S/DESPIDO",
+  "antecedentes": "El despido se produjo debido a que Eduardo Andrés Ramírez omitió controlar el agua de una unidad antes de que saliera a prestar servicio, lo que causó que se quemara el motor. La reparación del motor costó aproximadamente $150.000. La empresa consideró que el incumplimiento de Ramírez fue de gravedad y sin justificación. Ramírez negó las circunstancias invocadas por la empresa y solicitó que se dejara sin efecto el despido y se le otorgaran tareas nuevamente. La empresa ratificó el despido con causa mediante una misiva el 18/12/2014.",
+  "sentencia": "Sentencia que prescribe el art. 54 inc. \"d\" de la ley 15.057, en la causa \"RAMIREZ EDUARDO ANDRES C/ GRUPO PLAZA S.A. S/ DESPIDO\" Expediente N° 39188. A tal fin se practica el sorteo, resultando que en la votación debe observarse el siguiente orden: Marcasciano- Vigliarolo- Bordino. Acto seguido la jueza Marcasciano dijo: 1. ANTECEDENTES Y OBJETO DE LA DEMANDA: 1.1. El día 22/12/2015, el actor Ramírez Eduardo Andrés (DNI:24892409) a través de su letrada apoderada, promovió demanda por indemnizaciones derivadas del despido, liquidación final, SAC y vacaciones proporcionales y no gozadas, penalidades legales y entrega del certificado del art. 80 LCT, más intereses y costas, contra Transporte Automotor Plaza SACI e I. A tal fin, informó fecha de ingreso, tareas realizadas, jornada, describió intercambio telegráfico y la forma en que se produjo la desvinculación laboral. Practicó liquidación, ofreció prueba, fundó en derecho y solicitó que se haga lugar a la demanda con costas. 1.2. Ordenado el traslado que preveía el art. 28 de la ley 11.653, el 5/8/2016, contestó demanda el letrado apoderado de Transporte Automotor Plaza SACI. En primer lugar realizó una negativa de algunos de los hechos invocados en la demanda, reconoció la existencia de la relación laboral y del intercambio telegráfico, dando su propia versión de las circunstancias fácticas acontecidas y de la desvinculación de...",
+  "hechos_estructurados": {
+    "que_paso": "Eduardo Andrés Ramírez fue despedido directamente mediante telegrama el 11/12/2014.",
+    "evento": "Despido directo",
+    "contexto": "La empresa Transporte Automotor Plaza S.A.C. despidió a Eduardo Andrés Ramírez por incumplimiento de sus responsabilidades.",
+    "actores": "Eduardo Andrés Ramírez y Transporte Automotor Plaza S.A.C.",
+    "consecuencia": "El despido directo con causa",
+    "controversia": "No surge",
+    "explicacion": "El despido se produjo debido a que Eduardo Andrés Ramírez omitió controlar el agua de una unidad antes de que saliera a prestar servicio, lo que causó que se quemara el motor. La reparación del motor costó aproximadamente $150.000. La empresa consideró que el incumplimiento de Ramírez fue de gravedad y sin justificación. Ramírez negó las circunstancias invocadas por la empresa y solicitó que se dejara sin efecto el despido y se le otorgaran tareas nuevamente. La empresa ratificó el despido con causa mediante una misiva el 18/12/2014."
+  },
+  "timestamp": "2026-03-27T21:45:02.865Z"
+}

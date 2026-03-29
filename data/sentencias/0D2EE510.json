@@ -1,0 +1,18 @@
+{
+  "idCodigoAcceso": "0D2EE510",
+  "nroRegistro": "RS-1221-2025",
+  "nroExpediente": "41574",
+  "caratula": "MEDORO LEANDRO EMANUEL C/ FEDERACION PATRONAL SEGUROS S.A. S/ ENFERMEDAD ACCIDENTE",
+  "antecedentes": "El trabajador sufrió un accidente de tráfico el 15 de septiembre de 2016 mientras desarrollaba sus tareas como delivery. Según el dictamen pericial médico, el trabajador presentaba discopatías del raquis superior y inferior, secuelas post-traumáticas en el hombro izquierdo y la mano derecha, y fractura del 2° metacarpiano. Estas lesiones le generaron una minusvalía del 40.20%. La empresa Federación Patronal Seguros SA brindó prestaciones asistenciales al trabajador después de recibir la denuncia de siniestro. El trabajador reclamó indemnización por las consecuencias del accidente.",
+  "sentencia": "Sentencia que prescribe el artículo 54 inciso \"d\" de la ley 15.057, en la causa caratulada \"Medoro Leandro Emanuel c/ Federación Patronal Seguros SA s/ Enfermedad Accidente\" exp. 41.574. A tal fin se practica sorteo, resultando que en la votación debe observarse el siguiente orden: Vigliarolo - Bordino - Marcasciano. Acto seguido, el Juez Vigliarolo dijo: 1. ANTECEDENTES Y OBJETO DE LA DEMANDA: 1.1. Con fecha 25/4/2017 se presenta Leandro Emanuel Medoro, DNI 39.959.145 a través de su letrado apoderado, promoviendo demanda de prestaciones de la ley 24.557 contra Federación Patronal Seguros SA, con motivo de las secuelas incapacitantes que como derivadas del accidente que denuncia como acaecido en fecha 15/9/2016. A tal fin informa sobre sus labores como delivery para la heladería \"Piamonte\" de la localidad de Quilmes, la jornada desempeñada y remuneración percibida. Relata que el día 15/9/2016 aproximadamente a las 23:30 hs. en momentos en que realizaba sus actividades de delivery, al llegar a una intersección resultó embestido por un vehículo, sufriendo a raíz de dicho impacto las lesiones que describe. Seguidamente refiere que tras formalizar la denuncia del siniestro padecido la entidad aseguradora brindó las prestaciones asistenciales correspondientes. Practica liquidación, mensura la incapacidad que sostiene padecer, plantea la inconstitucionalidad de la ley 24.557 y comple...",
+  "hechos_estructurados": {
+    "que_paso": "El trabajador sufrió un accidente el 15 de septiembre de 2016 mientras desarrollaba sus tareas como delivery.",
+    "evento": "Accidente de tráfico",
+    "contexto": "El trabajador estaba circulando en su moto por la Avenida Presidente Perón en Quilmes cuando fue envestido por un automóvil Volkswagen que circulaba sin luces.",
+    "actores": "El trabajador, Aníbal Rubén Morando, y la empresa Federación Patronal Seguros SA",
+    "consecuencia": "El trabajador sufrió lesiones que le generaron una minusvalía del 40.20%.",
+    "controversia": "No surge",
+    "explicacion": "El trabajador sufrió un accidente de tráfico el 15 de septiembre de 2016 mientras desarrollaba sus tareas como delivery. Según el dictamen pericial médico, el trabajador presentaba discopatías del raquis superior y inferior, secuelas post-traumáticas en el hombro izquierdo y la mano derecha, y fractura del 2° metacarpiano. Estas lesiones le generaron una minusvalía del 40.20%. La empresa Federación Patronal Seguros SA brindó prestaciones asistenciales al trabajador después de recibir la denuncia de siniestro. El trabajador reclamó indemnización por las consecuencias del accidente."
+  },
+  "timestamp": "2026-03-27T21:52:56.757Z"
+}

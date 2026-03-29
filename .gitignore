@@ -6,7 +6,7 @@ dist/
 .env.*
 
 # Datos generados (viven en Cloud Storage en producción)
-data/
+# data/
 
 # Logs
 *.log

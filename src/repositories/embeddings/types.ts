@@ -1,7 +1,34 @@
+export type EmbeddingIndice =
+  | 'despidos'
+  | 'accidentes_trayecto'
+  | 'accidentes_trabajo'
+  | 'enfermedades'
+  | 'otros';
+
+export type EmbeddingSubindice =
+  | 'despido_enfermedad'
+  | 'despido_general'
+  | 'despido_conciliacion'
+  | 'despido_registracion'
+  | 'enfermedad_profesional'
+  | 'enfermedad_accidente'
+  | 'enfermedad_procesal'
+  | 'trayecto_general'
+  | 'trabajo_general'
+  | 'otro';
+
 export interface EmbeddingEntry {
   idCodigoAcceso: string;
   nroRegistro: string;
   caratula: string;
+  indice: EmbeddingIndice;
+  subindice: EmbeddingSubindice;
+  demandante?: string;
+  demandado?: string;
+  tipoCausa?: string;
+  quePaso?: string;
+  resultadoCausa?: string;
+  hechosExplicacion?: string;
   decision: string;
   embedding: number[];
 }
@@ -52,6 +79,13 @@ export interface SimilarityResult {
   idCodigoAcceso: string;
   nroRegistro: string;
   caratula: string;
+  indice: EmbeddingIndice;
+  subindice: EmbeddingSubindice;
+  demandante?: string;
+  demandado?: string;
+  tipoCausa?: string;
+  quePaso?: string;
+  resultadoCausa?: string;
   decision: string;
   score: number;
 }

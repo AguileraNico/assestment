@@ -1,5 +1,7 @@
 import {
   EmbeddingEntry,
+  EmbeddingIndice,
+  EmbeddingSubindice,
   SimilarityResult,
   BuscarRegistrosPorFechaYOrganismoPayload,
   BuscarRegistrosRequest,
@@ -106,12 +108,26 @@ export class EmbeddingsRepository {
     return stored;
   }
 
-  buscarSimilares(embedding: number[], topK: number = 5): SimilarityResult[] {
+  buscarSimilares(
+    embedding: number[],
+    topK: number = 5,
+    indice?: EmbeddingIndice,
+    subindice?: EmbeddingSubindice,
+  ): SimilarityResult[] {
     return this.store
+      .filter((entry) => !indice || entry.indice === indice)
+      .filter((entry) => !subindice || entry.subindice === subindice)
       .map((entry) => ({
         idCodigoAcceso: entry.idCodigoAcceso,
         nroRegistro: entry.nroRegistro,
         caratula: entry.caratula,
+        indice: entry.indice,
+        subindice: entry.subindice,
+        demandante: entry.demandante,
+        demandado: entry.demandado,
+        tipoCausa: entry.tipoCausa,
+        quePaso: entry.quePaso,
+        resultadoCausa: entry.resultadoCausa,
         decision: entry.decision,
         score: this.cosineSimilarity(embedding, entry.embedding),
       }))

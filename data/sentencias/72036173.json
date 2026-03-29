@@ -1,0 +1,18 @@
+{
+  "idCodigoAcceso": "72036173",
+  "nroRegistro": "RS-1275-2025",
+  "nroExpediente": "43325",
+  "caratula": "MEZA ROMINA CINTIA GISELE C/ FISCO DE LA PROVINCIA DE BUENOS AIRES S/ ACCIDENTE IN-ITINERE",
+  "antecedentes": "La trabajadora sufrió un accidente en trayecto del trabajo a su domicilio el día 27/03/2017. La administradora del autoaseguro estatal aceptó la contingencia y brindó prestaciones en especie hasta su alta médica con fecha 14/6/2017. Para dilucidar el estado de salud de la trabajadora, se recurrió a la pericia médica. La pericia médica determinó que la trabajadora padece una incapacidad del 14% de la T.O. por Impotencia funcional de rodilla izquierda y Impotencia funcional de tobillo izquierdo. La administradora del autoaseguro estatal cuestionó la pericia médica, pero el juez consideró que la pericia médica era adecuadamente fundada y otorgó valor probatorio al acto pericial. En consecuencia, se consideró que la trabajadora padece una ILPPD del 17,3 % derivada del siniestro de autos.",
+  "sentencia": "Sentencia que prescribe el artículo 54 inciso \"d\" de la ley 15.057, en la causa caratulada \"MEZA ROMINA CINTIA GISELE C/ FISCO DE LA PROVINCIA DE BUENOS AIRES S/ ACCIDENTE IN-ITINERE\" exp. 43325. A tal fin se practica sorteo, resultando que en la votación debe observarse el siguiente orden: Marcasciano - Bordino - Vigliarolo. Acto seguido la Jueza Marcasciano dijo: 1. ANTECEDENTES Y OBJETO DE LA DEMANDA: 1.1. El 14/12/2017 se presentó la actora Romina Cintia Gisele Meza por intermedio de su letrada apoderada, promoviendo demanda contra el Fisco de la Provincia de Buenos Aires -enderezada respecto de la misma el 27/02/2024-, en su carácter de empleador autoasegurado, con el objeto de obtener el reconocimiento de las prestaciones dinerarias previstas en la Ley 24.557 y sus modificatorias, en virtud de la incapacidad psicofísica que sostiene padecer como consecuencia del accidente in itinere denunciado como ocurrido el 27/03/2017. Relató que, en ocasión de encontrase en trayecto de su lugar de trabajo a su domicilio, siendo las 23:00 horas del día antes referido, fue interceptada por sujetos que le robaron y la golpearon. Informó el diagnóstico médico recibido, estimó su incapacidad psicofísica en el 30% de la T.O. por fractura de peroné de pierna izquierda, esguince de tobillo izquierdo y lesiones en hombro derecho, solicitó la declaración de inconstitucionalidad de diversas norm...",
+  "hechos_estructurados": {
+    "que_paso": "Se denunció un accidente en trayecto del trabajo a su domicilio sucedido el día 27/03/2017.",
+    "evento": "Accidente laboral",
+    "contexto": "Trayecto del trabajo a su domicilio",
+    "actores": "La trabajadora y la administradora del autoaseguro estatal",
+    "consecuencia": "La trabajadora padece una ILPPD del 17,3 % derivada del siniestro de autos",
+    "controversia": "No surge",
+    "explicacion": "La trabajadora sufrió un accidente en trayecto del trabajo a su domicilio el día 27/03/2017. La administradora del autoaseguro estatal aceptó la contingencia y brindó prestaciones en especie hasta su alta médica con fecha 14/6/2017. Para dilucidar el estado de salud de la trabajadora, se recurrió a la pericia médica. La pericia médica determinó que la trabajadora padece una incapacidad del 14% de la T.O. por Impotencia funcional de rodilla izquierda y Impotencia funcional de tobillo izquierdo. La administradora del autoaseguro estatal cuestionó la pericia médica, pero el juez consideró que la pericia médica era adecuadamente fundada y otorgó valor probatorio al acto pericial. En consecuencia, se consideró que la trabajadora padece una ILPPD del 17,3 % derivada del siniestro de autos."
+  },
+  "timestamp": "2026-03-27T22:00:09.747Z"
+}
